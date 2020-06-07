@@ -5,12 +5,11 @@ random but reproducible data for unit testing.
 """
 
 from __future__ import annotations
-from typing import Sequence
+import doctest
 import string
 from math import log2
 from hashlib import sha256
 from bitlist import bitlist
-import doctest
 
 class fountains():
     """
@@ -36,13 +35,13 @@ class fountains():
     """
 
     def __init__(
-        self,
-        length = 1,
-        limit = None,
-        seed = bytes(0),
-        bits = None,
-        function = None
-    ):
+            self,
+            length=1,
+            limit=None,
+            seed=bytes(0),
+            bits=None,
+            function=None
+        ):
         self.length = length
         self.limit = limit
         self.count = 0
@@ -54,14 +53,14 @@ class fountains():
             self.state = seed.to_bytes(int(log2(seed+1)) // 8, 'little')
         elif isinstance(seed, str):
             self.state = str.encode(seed)
-        elif isinstance(seed, bytes) or isinstance(seed, bytearray):
+        elif isinstance(seed, (bytes, bytearray)):
             self.state = seed
         else:
             raise ValueError("seed must be of type int, str, bytes, or bytearray")
 
         if bits is None:
             self.bits = None
-        elif isinstance(bits, bytes) or isinstance(bits, bytearray):
+        elif isinstance(bits, (bytes, bytearray)):
             self.bits = bitlist(bits)
             self.limit = len(self.bits) # Only enough data for target bits.
         elif isinstance(bits, list) and all(isinstance(n, int) for n in bits):
@@ -79,7 +78,8 @@ class fountains():
         self.function = function
 
     def bit(self, bs):
-        if isinstance(bs, bytes) or isinstance(bs, bytearray):
+        """Obtain the next bit from the output."""
+        if isinstance(bs, (bytes, bytearray)):
             bs = bitlist(bs)
         if not isinstance(bs, bitlist):
             raise ValueError("test output must be a bytes-like object or bitlist")

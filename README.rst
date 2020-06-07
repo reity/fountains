@@ -23,6 +23,10 @@ The library can be imported in the usual ways::
     import fountains
     from fountains import *
 
+Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
+
+    pylint fountains
+
 Unit tests can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`_::
 
     python fountains/fountains.py -v
