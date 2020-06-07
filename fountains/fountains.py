@@ -71,7 +71,10 @@ class fountains():
         self.function = function
 
     def bit(self, bs):
-        bs = bitlist(bs)
+        if isinstance(bs, bytes) or isinstance(bs, bytearray):
+            bs = bitlist(bs)
+        if not isinstance(bs, bitlist):
+            raise ValueError("test output must be a bytes-like object or bitlist")
 
         # Reset the bit counter if the output is too short.
         self.bit_ = self.bit_ if self.bit_ < len(bs) else 0
