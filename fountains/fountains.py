@@ -15,7 +15,7 @@ import doctest
 class fountains():
     """
     Class for test data enumeration objects.
-    
+
     >>> [int.from_bytes(bs, 'little') for (_, bs) in zip(range(3), fountains(2))]
     [45283, 7118, 54574]
     >>> [int.from_bytes(bs, 'little') for bs in fountains(1, 3)]
@@ -25,6 +25,14 @@ class fountains():
     '733a5900'
     >>> list(fountains(4, 4, function=fun, bits=[0,1,0,1]))
     [True, True, False, True]
+    >>> fun = lambda bs: bitlist([1])
+    >>> list(fountains(4, 4, function=fun, bits=[0,1,0,1]))
+    [False, True, False, True]
+    >>> fun = lambda bs: ['this is a list']
+    >>> list(fountains(1, 1, function=fun, bits=[1]))
+    Traceback (most recent call last):
+      ...
+    ValueError: test output must be a bytes-like object or bitlist
     """
 
     def __init__(
