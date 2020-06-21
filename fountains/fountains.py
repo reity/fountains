@@ -4,7 +4,6 @@ Python library for generating and embedding in a compact way
 random but reproducible data for unit testing.
 """
 
-from __future__ import annotations
 import doctest
 import string
 from math import log2
