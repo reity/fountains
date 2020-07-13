@@ -49,7 +49,7 @@ class fountains():
         if isinstance(seed, int):
             if seed < 0:
                 raise ValueError("integer seed must be non-negative")
-            self.state = seed.to_bytes(int(log2(seed+1)) // 8, 'little')
+            self.state = seed.to_bytes(1 + (int(log2(max(seed, 1))) // 8), 'little')
         elif isinstance(seed, str):
             self.state = str.encode(seed)
         elif isinstance(seed, (bytes, bytearray)):
