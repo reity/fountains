@@ -16,12 +16,34 @@ class fountains():
 
     >>> [int.from_bytes(bs, 'little') for (_, bs) in zip(range(3), fountains(2))]
     [45283, 7118, 54574]
+    >>> [int.from_bytes(bs, 'little') for (_, bs) in zip(range(3), fountains(2, seed=123))]
+    [7938, 11702, 64114]
+    >>> [int.from_bytes(bs, 'little') for (_, bs) in zip(range(3), fountains(2, seed='abc'))]
+    [30906, 57846, 34365]
+    >>> fountains(2, seed=-1)
+    Traceback (most recent call last):
+      ...
+    ValueError: integer seed must be non-negative
+    >>> fountains(2, seed=0.1)
+    Traceback (most recent call last):
+      ...
+    ValueError: seed must be of type int, str, bytes, or bytearray
     >>> [int.from_bytes(bs, 'little') for bs in fountains(1, 3)]
     [227, 206, 46]
     >>> fun = lambda bs: bytes(reversed(bs))
     >>> bitlist(list(fountains(4, 4*8, function=fun))).hex()
     '733a5900'
+    >>> list(fountains(4, 4, function=fun, bits=bytes([123])))
+    [True, True, True, True, False, True, True, True]
+    >>> list(fountains(4, 4, function=fun, bits='7b'))
+    [True, True, True, True, False, True, True, True]
+    >>> list(fountains(4, 4, function=fun, bits=0.1)) # doctest: +ELLIPSIS
+    Traceback (most recent call last):
+      ...
+    ValueError: target bits must be of type int, str of hexdigits, ... [0, 1]
     >>> list(fountains(4, 4, function=fun, bits=[0,1,0,1]))
+    [True, True, False, True]
+    >>> [f(bitlist(fun(bs))) for (bs, f) in list(fountains(4, 4, bits=[0,1,0,1]))]
     [True, True, False, True]
     >>> fun = lambda bs: bitlist([1])
     >>> list(fountains(4, 4, function=fun, bits=[0,1,0,1]))
@@ -71,7 +93,7 @@ class fountains():
         else:
             raise ValueError(
                 "target bits must be of type int, str of hexdigits, bytes, " +
-                "bytearray, or list of integers in the range [0, 1]"
+                "bytearray, or list of integers in the interval [0, 1]"
             )
 
         self.function = function
