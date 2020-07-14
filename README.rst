@@ -30,7 +30,11 @@ The library can be imported in the usual ways::
 
 Testing and Conventions
 -----------------------
-Unit tests can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`_::
+All unit tests are executed and their coverage is measured when using `nose <https://nose.readthedocs.io/>`_ (see ``setup.cfg`` for configution details)::
+
+    nosetests
+
+Alternatively, all unit tests are included in the module itself and can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`_::
 
     python fountains/fountains.py -v
 

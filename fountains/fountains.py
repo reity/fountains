@@ -147,4 +147,4 @@ class fountains():
             self.bit_ += 1
 
 if __name__ == "__main__":
-    doctest.testmod()
+    doctest.testmod() # pragma: no cover
