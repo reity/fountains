@@ -4,7 +4,7 @@ fountains
 
 Python library for generating and embedding in a compact way random but reproducible data for unit testing.
 
-|pypi| |travis|
+|pypi| |travis| |coveralls|
 
 .. |pypi| image:: https://badge.fury.io/py/fountains.svg
    :target: https://badge.fury.io/py/fountains
@@ -12,6 +12,9 @@ Python library for generating and embedding in a compact way random but reproduc
 
 .. |travis| image:: https://travis-ci.com/reity/fountains.svg?branch=master
     :target: https://travis-ci.com/reity/fountains
+
+.. |coveralls| image:: https://coveralls.io/repos/github/reity/fountains/badge.svg?branch=master
+   :target: https://coveralls.io/github/reity/fountains?branch=master
 
 Purpose
 -------

@@ -5,9 +5,9 @@ with open("README.rst", "r") as fh:
 
 setup(
     name="fountains",
-    version="0.2.0",
+    version="0.2.1",
     packages=["fountains",],
-    install_requires=["bitlist",],
+    install_requires=["bitlist>=0.3.1",],
     license="MIT",
     url="https://github.com/reity/fountains",
     author="Andrei Lapets",
