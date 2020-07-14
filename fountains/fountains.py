@@ -112,8 +112,10 @@ class fountains():
                 # function that checks an output for that bit.
                 yield (
                     bs[:self.length],
-                    lambda bs:\
-                        self.bit(bs) == self.bits[self.count]
+                    eval(
+                        "lambda bs: bs[" + str(self.bit_) + "] == " +\
+                        str(self.bits[self.count])
+                    )
                 )
             else:
                 # Return the generated test input.
