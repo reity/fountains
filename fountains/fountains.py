@@ -111,6 +111,10 @@ class fountains():
         return bs[self.bit_]
 
     def __iter__(self):
+        """
+        Generator that yields values based on the
+        parameters supplied at instantiation.
+        """
         while self.limit is None or self.count < self.limit:
             bs = bytearray()
             while len(bs) < self.length:
@@ -134,7 +138,7 @@ class fountains():
                 # function that checks an output for that bit.
                 yield (
                     bs[:self.length],
-                    eval(
+                    eval( # pylint: disable=W0123
                         "lambda bs: bs[" + str(self.bit_) + "] == " +\
                         str(self.bits[self.count])
                     )
