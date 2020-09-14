@@ -6,6 +6,7 @@ random but reproducible data for unit testing.
 
 import doctest
 import string
+from itertools import islice # pylint: disable=W0611 # Used in doctests.
 from math import log2
 from hashlib import sha256
 from bitlist import bitlist
@@ -53,6 +54,14 @@ class fountains():
     Traceback (most recent call last):
       ...
     ValueError: test output must be a bytes-like object or bitlist
+    >>> len(list(islice(fountains(32, 10), 0, 10)))
+    10
+    >>> len(list(islice(fountains(32, 10), 0, 5)))
+    5
+    >>> len(list(islice(fountains(32, 5), 0, 10)))
+    5
+    >>> len(list(islice(fountains(32), 0, 5)))
+    5
     """
 
     def __init__(
