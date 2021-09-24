@@ -1,11 +1,15 @@
 from setuptools import setup
 
 with open("README.rst", "r") as fh:
-    long_description = fh.read()
+    long_description = fh.read().replace(".. include:: toc.rst\n\n", "")
+
+# The lines below are parsed by `docs/conf.py`.
+name = "fountains"
+version = "0.2.1"
 
 setup(
-    name="fountains",
-    version="0.2.1",
+    name=name,
+    version=version,
     packages=["fountains",],
     install_requires=["bitlist>=0.3.1",],
     license="MIT",

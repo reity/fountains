@@ -64,6 +64,16 @@ Each individual boolean value in the above represents the result of an individua
 
 Each boolean value in the outputs of the last two code blocks above may be a false negative (i.e., `True` may mean that the function satisfies the specification only in a portion of its output for the corresponding input) but is *never a false positive signal of incorrect behavior* (i.e., `False` indicates the function does not satisfy the specification for the corresponding input-output pair).
 
+Documentation
+-------------
+.. include:: toc.rst
+
+The documentation can be generated automatically from the source files using `Sphinx <https://www.sphinx-doc.org/>`_::
+
+    python -m pip install sphinx sphinx-rtd-theme
+    cd docs
+    sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py && make html
+
 Testing and Conventions
 -----------------------
 All unit tests are executed and their coverage is measured when using `nose <https://nose.readthedocs.io/>`_ (see ``setup.cfg`` for configuration details)::
