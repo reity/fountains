@@ -1,2 +1,2 @@
-"""Allow users to build fountains values directly."""
+"""Gives users direct access to the class."""
 from fountains.fountains import fountains

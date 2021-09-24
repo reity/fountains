@@ -1,9 +1,9 @@
-"""Library for generating and embedding test data.
-
-Python library for generating and embedding in a compact way
-random but reproducible data for unit testing.
 """
-
+Python library for generating and concisely specifying
+reproducible pseudorandom binary data for unit testing.
+"""
+from __future__ import annotations
+from typing import Optional, Union, Sequence
 import doctest
 import string
 from itertools import islice # pylint: disable=W0611 # Used in doctests.
@@ -11,15 +11,18 @@ from math import log2
 from hashlib import sha256
 from bitlist import bitlist
 
-class fountains():
+class fountains: # pylint: disable=R0903
     """
-    Class for test data enumeration objects.
+    Class that can act as a pseudorandom test data generator and a testing
+    harness for functions.
+
+    An object of this class can be used to generate pseudorandom binary test data.
 
     >>> [int.from_bytes(bs, 'little') for (_, bs) in zip(range(3), fountains(2))]
     [45283, 7118, 54574]
-    >>> [int.from_bytes(bs, 'little') for (_, bs) in zip(range(3), fountains(2, seed=123))]
+    >>> [int.from_bytes(bs, 'little') for bs in fountains(2, 3, seed=123)]
     [7938, 11702, 64114]
-    >>> [int.from_bytes(bs, 'little') for (_, bs) in zip(range(3), fountains(2, seed='abc'))]
+    >>> [int.from_bytes(bs, 'little') for bs in fountains(2, 3, seed='abc')]
     [30906, 57846, 34365]
     >>> fountains(2, seed=-1)
     Traceback (most recent call last):
@@ -31,9 +34,23 @@ class fountains():
     ValueError: seed must be of type int, str, bytes, or bytearray
     >>> [int.from_bytes(bs, 'little') for bs in fountains(1, 3)]
     [227, 206, 46]
+
+    Supplying a function as a parameter makes it possible to generate a concise
+    specification for that function's behavior across a sequence of pseudorandom
+    inputs. The sequence of inputs corresponds exactly to the test data that is
+    emitted (as in the above example) when the function parameter is not used.
+
     >>> fun = lambda bs: bytes(reversed(bs))
     >>> bitlist(list(fountains(4, 4*8, function=fun))).hex()
     '733a5900'
+
+    Supplying the specification generated in the manner above as an additional
+    parameter makes it possible to test a function's behavior. In this case, an
+    iterable of boolean values is returned, with each boolean value in the sequence
+    indicating whether the function's behavior on the corresponding input (within
+    the sequence of pseudorandom test inputs) is consistent with the specification.
+    Note that *false negatives may occur*, but *false positive cannot occur*.
+
     >>> list(fountains(4, 4, function=fun, bits=bytes([123])))
     [True, True, True, True, False, True, True, True]
     >>> list(fountains(4, 4, function=fun, bits='7b'))
@@ -54,22 +71,26 @@ class fountains():
     Traceback (most recent call last):
       ...
     ValueError: test output must be a bytes-like object or bitlist
-    >>> len(list(islice(fountains(32, 10), 0, 10)))
+
+    It is possible to limit the number of pseudorandom test values
+    that are yielded (or, depending on the other parameters, the
+    number of tests that are conducted) when iterating over an object.
+
+    >>> len(list(fountains(32, limit=10)))
     10
-    >>> len(list(islice(fountains(32, 10), 0, 5)))
+    >>> len(list(fountains(32, limit=5)))
     5
-    >>> len(list(islice(fountains(32, 5), 0, 10)))
+    >>> len(list(islice(fountains(32, limit=10), 0, 5)))
     5
     >>> len(list(islice(fountains(32), 0, 5)))
     5
     """
-
     def __init__(
-            self,
-            length=1,
-            limit=None,
-            seed=bytes(0),
-            bits=None,
+            self: fountains,
+            length: int = 1,
+            limit: Optional[int] = None,
+            seed: Optional[Union[int, str, bytes, bytearray]] = bytes(0),
+            bits: Optional[Union[Sequence[int], str, bytes, bytearray]] = None,
             function=None
         ):
         self.length = length
@@ -107,8 +128,10 @@ class fountains():
 
         self.function = function
 
-    def bit(self, bs):
-        """Obtain the next bit from the output."""
+    def _bit(self: fountains, bs: Union[bytes, bytearray, bitlist]): # pylint: disable=C0103
+        """
+        Obtain the next bit from the output.
+        """
         if isinstance(bs, (bytes, bytearray)):
             bs = bitlist(bs)
         if not isinstance(bs, bitlist):
@@ -119,10 +142,13 @@ class fountains():
 
         return bs[self.bit_]
 
-    def __iter__(self):
+    def __iter__(self: fountains):
         """
-        Generator that yields values based on the
-        parameters supplied at instantiation.
+        Return a generator that yields values based on the parameters
+        supplied at this object's instantiation.
+
+        >>> [bs.hex() for bs in fountains(length=3, limit=4)]
+        ['e3b0c4', 'ce1bc4', '2ed5b5', '781f5a']
         """
         while self.limit is None or self.count < self.limit:
             bs = bytearray()
@@ -134,13 +160,13 @@ class fountains():
             if self.function is not None and self.bits is None:
                 # Return the output bits of the function on the
                 # generated test inputs, one at a time.
-                yield self.bit(self.function(bs[:self.length]))
+                yield self._bit(self.function(bs[:self.length]))
             elif self.function is not None and self.bits is not None:
                 # Return whether the function has the correct bit
                 # in its output for this generated input.
                 yield\
                     self.bits[self.count] ==\
-                        self.bit(self.function(bs[:self.length]))
+                        self._bit(self.function(bs[:self.length]))
             elif self.function is None and self.bits is not None:
                 # If a target bit sequence has been supplied
                 # but no function has been supplied, return a
