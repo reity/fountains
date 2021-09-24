@@ -12,8 +12,8 @@ setup(
     url="https://github.com/reity/fountains",
     author="Andrei Lapets",
     author_email="a@lapets.io",
-    description="Python library for generating and embedding in a compact"+\
-                "way random but reproducible data for unit testing.",
+    description="Python library for generating and concisely specifying"+\
+                "reproducible pseudorandom binary data for unit testing.",
     long_description=long_description,
     long_description_content_type="text/x-rst",
     test_suite="nose.collector",
