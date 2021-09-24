@@ -5,13 +5,13 @@ with open("README.rst", "r") as fh:
 
 # The lines below are parsed by `docs/conf.py`.
 name = "fountains"
-version = "0.2.1"
+version = "1.0.0"
 
 setup(
     name=name,
     version=version,
     packages=["fountains",],
-    install_requires=["bitlist>=0.3.1",],
+    install_requires=["bitlist~=0.5.1",],
     license="MIT",
     url="https://github.com/reity/fountains",
     author="Andrei Lapets",
