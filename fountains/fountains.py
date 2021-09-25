@@ -3,7 +3,7 @@ Python library for generating and concisely specifying
 reproducible pseudorandom binary data for unit testing.
 """
 from __future__ import annotations
-from typing import Optional, Union, Sequence
+from typing import Optional, Union, Sequence, Callable
 import doctest
 import string
 from itertools import islice # pylint: disable=W0611 # Used in doctests.
@@ -16,10 +16,16 @@ class fountains: # pylint: disable=R0903
     Class that can act as a pseudorandom test data generator and a testing
     harness for functions.
 
+    :param length: Size in bytes of each pseudorandom bytes-like object.
+    :param limit: Number of pseudorandom bytes-like objects to generate.
+    :param seed: Seed to use for generating pseudorandom bytes-like objects.
+    :param bits: Output specification to use for testing a function.
+    :param function: Function to test against the supplied specification.
+
     An object of this class can be used to generate pseudorandom binary test data.
 
-    >>> [int.from_bytes(bs, 'little') for (_, bs) in zip(range(3), fountains(2))]
-    [45283, 7118, 54574]
+    >>> [bs.hex() for bs in fountains(2, limit=3)]
+    ['e3b0', 'ce1b', '2ed5']
     >>> [int.from_bytes(bs, 'little') for bs in fountains(2, 3, seed=123)]
     [7938, 11702, 64114]
     >>> [int.from_bytes(bs, 'little') for bs in fountains(2, 3, seed='abc')]
@@ -41,8 +47,8 @@ class fountains: # pylint: disable=R0903
     emitted (as in the above example) when the function parameter is not used.
 
     >>> fun = lambda bs: bytes(reversed(bs))
-    >>> bitlist(list(fountains(4, 4*8, function=fun))).hex()
-    '733a5900'
+    >>> bitlist(list(fountains(8, limit=5 * 8, function=fun))).hex()
+    '30a2657266'
 
     Supplying the specification generated in the manner above as an additional
     parameter makes it possible to test a function's behavior. In this case, an
@@ -89,9 +95,9 @@ class fountains: # pylint: disable=R0903
             self: fountains,
             length: int = 1,
             limit: Optional[int] = None,
-            seed: Optional[Union[int, str, bytes, bytearray]] = bytes(0),
-            bits: Optional[Union[Sequence[int], str, bytes, bytearray]] = None,
-            function=None
+            seed: Union[int, str, bytes, bytearray, None] = bytes(0),
+            bits: Union[Sequence[int], str, bytes, bytearray, None] = None,
+            function: Optional[Callable[[bytes], bytes]] = None
         ):
         self.length = length
         self.limit = limit
