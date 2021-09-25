@@ -35,7 +35,8 @@ copyright = '2020, Reity LLC' # Period omitted; precedes punctuation.
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx_autodoc_typehints'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -48,7 +49,6 @@ exclude_patterns = ['_build']
 
 # Options to configure autodoc extension behavior.
 autodoc_member_order = 'bysource'
-autodoc_preserve_defaults = True
 autodoc_default_options = {
     'special-members': True,
     'exclude-members': ','.join([
@@ -59,6 +59,9 @@ autodoc_default_options = {
         '__dict__'
     ])
 }
+autodoc_typehints = "description"
+autodoc_typehints_description_target = "documented"
+autodoc_preserve_defaults = True
 
 
 # -- Options for HTML output -------------------------------------------------
