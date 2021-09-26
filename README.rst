@@ -14,8 +14,8 @@ Python library for generating and concisely specifying reproducible pseudorandom
    :target: https://fountains.readthedocs.io/en/latest/?badge=latest
    :alt: Read the Docs documentation status.
 
-.. |travis| image:: https://travis-ci.com/reity/fountains.svg?branch=main
-   :target: https://travis-ci.com/reity/fountains
+.. |travis| image:: https://app.travis-ci.com/reity/fountains.svg?branch=main
+   :target: https://app.travis-ci.com/reity/fountains
    :alt: Travis CI build status.
 
 .. |coveralls| image:: https://coveralls.io/repos/github/reity/fountains/badge.svg?branch=main
