@@ -27,6 +27,7 @@ release = version
 author = 'Reity LLC'
 copyright = '2020, Reity LLC' # Period omitted; precedes punctuation.
 
+
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
