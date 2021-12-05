@@ -11,7 +11,7 @@ setup(
     name=name,
     version=version,
     packages=[name,],
-    install_requires=["bitlist~=0.5.1",],
+    install_requires=["bitlist~=0.6",],
     license="MIT",
     url="https://github.com/reity/fountains",
     author="Andrei Lapets",
