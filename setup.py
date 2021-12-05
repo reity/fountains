@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 # The lines below are parsed by `docs/conf.py`.
 name = "fountains"
-version = "1.1.1"
+version = "1.2.0"
 
 setup(
     name=name,

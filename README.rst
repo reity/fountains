@@ -4,7 +4,7 @@ fountains
 
 Python library for generating and concisely specifying reproducible pseudorandom binary data for unit testing.
 
-|pypi| |readthedocs| |travis| |coveralls|
+|pypi| |readthedocs| |actions| |coveralls|
 
 .. |pypi| image:: https://badge.fury.io/py/fountains.svg
    :target: https://badge.fury.io/py/fountains
@@ -14,9 +14,9 @@ Python library for generating and concisely specifying reproducible pseudorandom
    :target: https://fountains.readthedocs.io/en/latest/?badge=latest
    :alt: Read the Docs documentation status.
 
-.. |travis| image:: https://app.travis-ci.com/reity/fountains.svg?branch=main
-   :target: https://app.travis-ci.com/reity/fountains
-   :alt: Travis CI build status.
+.. |actions| image:: https://github.com/reity/fountains/workflows/lint-test-cover-docs/badge.svg
+   :target: https://github.com/reity/fountains/actions/workflows/lint-test-cover-docs.yml
+   :alt: GitHub Actions status.
 
 .. |coveralls| image:: https://coveralls.io/repos/github/reity/fountains/badge.svg?branch=main
    :target: https://coveralls.io/github/reity/fountains?branch=main
