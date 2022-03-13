@@ -5,13 +5,13 @@ with open("README.rst", "r") as fh:
 
 # The lines below are parsed by `docs/conf.py`.
 name = "fountains"
-version = "1.2.0"
+version = "1.3.0"
 
 setup(
     name=name,
     version=version,
     packages=[name,],
-    install_requires=["bitlist~=0.6",],
+    install_requires=["bitlist~=0.7",],
     license="MIT",
     url="https://github.com/reity/fountains",
     author="Andrei Lapets",
@@ -20,6 +20,4 @@ setup(
                 "reproducible pseudorandom binary data for unit testing.",
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    test_suite="nose.collector",
-    tests_require=["nose"],
 )
