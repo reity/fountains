@@ -45,6 +45,8 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.viewcode',
     'sphinx_autodoc_typehints'
 ]
 
@@ -71,6 +73,12 @@ autodoc_default_options = {
 autodoc_typehints = "description"
 autodoc_typehints_description_target = "documented"
 autodoc_preserve_defaults = True
+
+# Allow references/links to definitions found in the Python documentation.
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'bitlist': ('https://bitlist.readthedocs.io/en/latest', None)
+}
 
 
 # -- Options for HTML output -------------------------------------------------

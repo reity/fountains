@@ -3,12 +3,12 @@ Python library for generating and concisely specifying
 reproducible pseudorandom binary data for unit testing.
 """
 from __future__ import annotations
-from typing import Optional, Union, Sequence, Callable
+from typing import Tuple, Union, Optional, Callable, Sequence, Iterable
 import doctest
 import string
 from itertools import islice # pylint: disable=W0611 # Used in doctests.
 from math import log2
-from hashlib import sha256
+import hashlib
 from bitlist import bitlist
 
 class fountains: # pylint: disable=C0103,R0903,R0913
@@ -55,7 +55,7 @@ class fountains: # pylint: disable=C0103,R0903,R0913
     iterable of boolean values is returned, with each boolean value in the sequence
     indicating whether the function's behavior on the corresponding input (within
     the sequence of pseudorandom test inputs) is consistent with the specification.
-    Note that *false negatives may occur*, but *false positive cannot occur*.
+    Note that *false negatives may occur*, but *false positives will never occur*.
 
     >>> list(fountains(4, 4, function=fun, bits=bytes([123])))
     [True, True, True, True, False, True, True, True]
@@ -65,12 +65,12 @@ class fountains: # pylint: disable=C0103,R0903,R0913
     Traceback (most recent call last):
       ...
     ValueError: target bits must be of type int, str of hexdigits, ... [0, 1]
-    >>> list(fountains(4, 4, function=fun, bits=[0,1,0,1]))
+    >>> list(fountains(4, 4, function=fun, bits=[0, 1, 0, 1]))
     [True, True, False, True]
-    >>> [f(bitlist(fun(bs))) for (bs, f) in list(fountains(4, 4, bits=[0,1,0,1]))]
+    >>> [check(bitlist(fun(bs))) for (bs, check) in list(fountains(4, 4, bits=[0, 1, 0, 1]))]
     [True, True, False, True]
     >>> fun = lambda bs: bitlist([1])
-    >>> list(fountains(4, 4, function=fun, bits=[0,1,0,1]))
+    >>> list(fountains(4, 4, function=fun, bits=[0, 1, 0, 1]))
     [False, True, False, True]
     >>> fun = lambda bs: ['this is a list']
     >>> list(fountains(1, 1, function=fun, bits=[1]))
@@ -134,7 +134,7 @@ class fountains: # pylint: disable=C0103,R0903,R0913
 
         self.function = function
 
-    def _bit(self: fountains, bs: Union[bytes, bytearray, bitlist]): # pylint: disable=C0103
+    def _bit(self: fountains, bs: Union[bytes, bytearray, bitlist]) -> int: # pylint: disable=C0103
         """
         Obtain the next bit from the output.
         """
@@ -148,18 +148,46 @@ class fountains: # pylint: disable=C0103,R0903,R0913
 
         return bs[self.bit_]
 
-    def __iter__(self: fountains):
+    def __iter__(
+            self: fountains
+        ) -> Union[
+            Iterable[int],
+            Iterable[bool],
+            Iterable[Tuple[bytearray, Callable]],
+            Iterable[bytearray]
+        ]:
         """
         Return a generator that yields values based on the parameters
         supplied at this object's instantiation.
 
         >>> [bs.hex() for bs in fountains(length=3, limit=4)]
         ['e3b0c4', 'ce1bc4', '2ed5b5', '781f5a']
+        >>> fun = lambda bs: hashlib.md5(bs).digest()
+        >>> list(fountains(
+        ...     length=2,
+        ...     limit=4,
+        ...     function=fun
+        ... ))
+        [0, 0, 1, 1]
+        >>> list(fountains(
+        ...     length=2,
+        ...     limit=4,
+        ...     bits=[0, 0, 1, 0],
+        ...     function=fun
+        ... ))
+        [True, True, True, False]
+        >>> bcs = list(fountains(
+        ...     length=2,
+        ...     limit=4,
+        ...     bits=[0, 0, 1, 1]
+        ... ))
+        >>> [check(bitlist(fun(bs))) for (bs, check) in bcs]
+        [True, True, True, True]
         """
         while self.limit is None or self.count < self.limit:
             bs = bytearray() # pylint: disable=C0103
             while len(bs) < self.length:
-                bs_ = sha256(self.state).digest()
+                bs_ = hashlib.sha256(self.state).digest()
                 bs.extend(bs_[:16])
                 self.state = bs_[16:]
 
@@ -170,8 +198,8 @@ class fountains: # pylint: disable=C0103,R0903,R0913
             elif self.function is not None and self.bits is not None:
                 # Return whether the function has the correct bit
                 # in its output for this generated input.
-                yield\
-                    self.bits[self.count] ==\
+                yield \
+                    self.bits[self.count] == \
                         self._bit(self.function(bs[:self.length]))
             elif self.function is None and self.bits is not None:
                 # If a target bit sequence has been supplied
@@ -180,7 +208,7 @@ class fountains: # pylint: disable=C0103,R0903,R0913
                 yield (
                     bs[:self.length],
                     eval( # pylint: disable=W0123
-                        "lambda bs: bs[" + str(self.bit_) + "] == " +\
+                        "lambda bs: bs[" + str(self.bit_) + "] == " + \
                         str(self.bits[self.count])
                     )
                 )
