@@ -24,11 +24,11 @@ Python library for generating and concisely specifying reproducible pseudorandom
 
 Purpose
 -------
-This library makes it possible to generate pseudorandom binary test data in a reproducible way, as well as to embed concise specifications of correct function behavior on that test data. This enables the construction of functional tests within unit testing suites that fit within one-line definitions but still test a function's behavior against a large number of inputs. More background information about this library's purpose, design, and implementation can be found in a `related article <https://github.com/reity/article-specifications-for-distinguishing-functions>`_.
+This library makes it possible to generate pseudorandom binary test data in a reproducible way, as well as to embed concise specifications of correct function behavior on that test data. This enables the construction of functional tests within unit testing suites that fit within one-line definitions but still test a function's behavior against a large number of inputs. More background information about this library's purpose, design, and implementation can be found in a `related article <https://github.com/reity/article-specifications-for-distinguishing-functions>`__.
 
-Package Installation and Usage
-------------------------------
-The package is available on `PyPI <https://pypi.org/project/fountains/>`_::
+Installation and Usage
+----------------------
+This library is available as a `package on PyPI <https://pypi.org/project/fountains>`__::
 
     python -m pip install fountains
 
@@ -70,49 +70,55 @@ Each individual boolean value in the above represents the result of an individua
 
 Each boolean value in the outputs of the last two code blocks above may be a false negative (i.e., `True` may mean that the function satisfies the specification only in a portion of its output for the corresponding input) but is *never a false positive signal of incorrect behavior* (i.e., `False` indicates the function does not satisfy the specification for the corresponding input-output pair).
 
+Development
+-----------
+All installation and development dependencies are fully specified in ``pyproject.toml``. The ``project.optional-dependencies`` object is used to `specify optional requirements <https://peps.python.org/pep-0621>`__ for various development tasks. This makes it possible to specify additional options (such as ``docs``, ``lint``, and so on) when performing installation using `pip <https://pypi.org/project/pip>`__::
+
+    python -m pip install .[docs,lint]
+
 Documentation
--------------
-.. include:: toc.rst
+^^^^^^^^^^^^^
+The documentation can be generated automatically from the source files using `Sphinx <https://www.sphinx-doc.org>`__::
 
-The documentation can be generated automatically from the source files using `Sphinx <https://www.sphinx-doc.org/>`_::
-
+    python -m pip install .[docs]
     cd docs
-    python -m pip install -r requirements.txt
-    sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py && make html
+    sphinx-apidoc -f -E --templatedir=_templates -o _source .. && make html
 
 Testing and Conventions
------------------------
-All unit tests are executed and their coverage is measured when using `pytest <https://docs.pytest.org/>`_ (see ``setup.cfg`` for configuration details)::
+^^^^^^^^^^^^^^^^^^^^^^^
+All unit tests are executed and their coverage is measured when using `pytest <https://docs.pytest.org>`__ (see the ``pyproject.toml`` file for configuration details)::
 
-    python -m pip install pytest pytest-cov
+    python -m pip install .[test]
     python -m pytest
 
-Alternatively, all unit tests are included in the module itself and can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`_::
+Alternatively, all unit tests are included in the module itself and can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`__::
 
     python fountains/fountains.py -v
 
-Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
+Style conventions are enforced using `Pylint <https://www.pylint.org>`__::
 
-    python -m pip install pylint
+    python -m pip install .[lint]
     python -m pylint fountains
 
 Contributions
--------------
-In order to contribute to the source code, open an issue or submit a pull request on the `GitHub page <https://github.com/reity/fountains>`_ for this library.
+^^^^^^^^^^^^^
+In order to contribute to the source code, open an issue or submit a pull request on the `GitHub page <https://github.com/reity/fountains>`__ for this library.
 
 Versioning
-----------
-Beginning with version 0.2.0, the version number format for this library and the changes to the library associated with version number increments conform with `Semantic Versioning 2.0.0 <https://semver.org/#semantic-versioning-200>`_.
+^^^^^^^^^^
+Beginning with version 0.2.0, the version number format for this library and the changes to the library associated with version number increments conform with `Semantic Versioning 2.0.0 <https://semver.org/#semantic-versioning-200>`__.
 
 Publishing
-----------
-This library can be published as a `package on PyPI <https://pypi.org/project/fountains/>`_ by a package maintainer. Install the `wheel <https://pypi.org/project/wheel/>`_ package, remove any old build/distribution files, and package the source into a distribution archive::
+^^^^^^^^^^
+This library can be published as a `package on PyPI <https://pypi.org/project/fountains>`__ by a package maintainer. First, install the dependencies required for packaging and publishing::
 
-    python -m pip install wheel
-    rm -rf dist *.egg-info
-    python setup.py sdist bdist_wheel
+    python -m pip install .[publish]
 
-Next, install the `twine <https://pypi.org/project/twine/>`_ package and upload the package distribution archive to PyPI::
+Remove any old build/distribution files and package the source into a distribution archive::
 
-    python -m pip install twine
+    rm -rf build dist *.egg-info
+    python -m build --sdist --wheel .
+
+Finally, upload the package distribution archive to `PyPI <https://pypi.org>`__ using the `twine <https://pypi.org/project/twine>`__ package::
+
     python -m twine upload dist/*
