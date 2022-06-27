@@ -11,7 +11,7 @@ from math import log2
 from hashlib import sha256
 from bitlist import bitlist
 
-class fountains: # pylint: disable=R0903
+class fountains: # pylint: disable=C0103,R0903,R0913
     """
     Class that can act as a pseudorandom test data generator and a testing
     harness for functions.
@@ -157,7 +157,7 @@ class fountains: # pylint: disable=R0903
         ['e3b0c4', 'ce1bc4', '2ed5b5', '781f5a']
         """
         while self.limit is None or self.count < self.limit:
-            bs = bytearray()
+            bs = bytearray() # pylint: disable=C0103
             while len(bs) < self.length:
                 bs_ = sha256(self.state).digest()
                 bs.extend(bs_[:16])
