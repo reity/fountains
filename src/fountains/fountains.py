@@ -6,12 +6,11 @@ from __future__ import annotations
 from typing import Tuple, Union, Optional, Callable, Sequence, Iterable
 import doctest
 import string
-from itertools import islice # pylint: disable=W0611 # Used in doctests.
 from math import log2
 import hashlib
 from bitlist import bitlist
 
-class fountains: # pylint: disable=C0103,R0903,R0913
+class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
     """
     Class that can act as a pseudorandom test data generator and a testing
     harness for functions.
@@ -86,6 +85,7 @@ class fountains: # pylint: disable=C0103,R0903,R0913
     10
     >>> len(list(fountains(32, limit=5)))
     5
+    >>> from itertools import islice
     >>> len(list(islice(fountains(32, limit=10), 0, 5)))
     5
     >>> len(list(islice(fountains(32), 0, 5)))
@@ -106,14 +106,14 @@ class fountains: # pylint: disable=C0103,R0903,R0913
 
         if isinstance(seed, int):
             if seed < 0:
-                raise ValueError("integer seed must be non-negative")
+                raise ValueError('integer seed must be non-negative')
             self.state = seed.to_bytes(1 + (int(log2(max(seed, 1))) // 8), 'little')
         elif isinstance(seed, str):
             self.state = str.encode(seed)
         elif isinstance(seed, (bytes, bytearray)):
             self.state = seed
         else:
-            raise ValueError("seed must be of type int, str, bytes, or bytearray")
+            raise ValueError('seed must be of type int, str, bytes, or bytearray')
 
         if bits is None:
             self.bits = None
@@ -128,20 +128,20 @@ class fountains: # pylint: disable=C0103,R0903,R0913
             self.limit = len(self.bits) # Only enough data for target bits.
         else:
             raise ValueError(
-                "target bits must be of type int, str of hexdigits, bytes, " +
-                "bytearray, or list of integers in the interval [0, 1]"
+                'target bits must be of type int, str of hexdigits, bytes, ' +
+                'bytearray, or list of integers in the interval [0, 1]'
             )
 
         self.function = function
 
-    def _bit(self: fountains, bs: Union[bytes, bytearray, bitlist]) -> int: # pylint: disable=C0103
+    def _bit(self: fountains, bs: Union[bytes, bytearray, bitlist]) -> int:
         """
         Obtain the next bit from the output.
         """
         if isinstance(bs, (bytes, bytearray)):
             bs = bitlist(bs)
         if not isinstance(bs, bitlist):
-            raise ValueError("test output must be a bytes-like object or bitlist")
+            raise ValueError('test output must be a bytes-like object or bitlist')
 
         # Reset the bit counter if the output is too short.
         self.bit_ = self.bit_ if self.bit_ < len(bs) else 0
@@ -185,7 +185,7 @@ class fountains: # pylint: disable=C0103,R0903,R0913
         [True, True, True, True]
         """
         while self.limit is None or self.count < self.limit:
-            bs = bytearray() # pylint: disable=C0103
+            bs = bytearray()
             while len(bs) < self.length:
                 bs_ = hashlib.sha256(self.state).digest()
                 bs.extend(bs_[:16])
@@ -207,8 +207,8 @@ class fountains: # pylint: disable=C0103,R0903,R0913
                 # function that checks an output for that bit.
                 yield (
                     bs[:self.length],
-                    eval( # pylint: disable=W0123
-                        "lambda bs: bs[" + str(self.bit_) + "] == " + \
+                    eval( # pylint: disable=eval-used
+                        'lambda bs: bs[' + str(self.bit_) + '] == ' + \
                         str(self.bits[self.count])
                     )
                 )
@@ -219,5 +219,5 @@ class fountains: # pylint: disable=C0103,R0903,R0913
             self.count += 1
             self.bit_ += 1
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     doctest.testmod() # pragma: no cover
