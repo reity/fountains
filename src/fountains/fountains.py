@@ -54,7 +54,7 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
     iterable of boolean values is returned, with each boolean value in the sequence
     indicating whether the function's behavior on the corresponding input (within
     the sequence of pseudorandom test inputs) is consistent with the specification.
-    Note that *false negatives may occur*, but *false positives will never occur*.
+    Note that *false negatives may occur*, but *false positives never occur*.
 
     >>> list(fountains(4, 4, function=fun, bits=bytes([123])))
     [True, True, True, True, False, True, True, True]
@@ -63,7 +63,7 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
     >>> list(fountains(4, 4, function=fun, bits=0.1)) # doctest: +ELLIPSIS
     Traceback (most recent call last):
       ...
-    ValueError: target bits must be of type int, str of hexdigits, ... [0, 1]
+    ValueError: target bits must be a sequence of integers ... bytearray
     >>> list(fountains(4, 4, function=fun, bits=[0, 1, 0, 1]))
     [True, True, False, True]
     >>> [check(bitlist(fun(bs))) for (bs, check) in list(fountains(4, 4, bits=[0, 1, 0, 1]))]
@@ -75,7 +75,7 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
     >>> list(fountains(1, 1, function=fun, bits=[1]))
     Traceback (most recent call last):
       ...
-    ValueError: test output must be a bytes-like object or bitlist
+    TypeError: test output must be a bytes-like object or bitlist
 
     It is possible to limit the number of pseudorandom test values
     that are yielded (or, depending on the other parameters, the
@@ -97,7 +97,13 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
             limit: Optional[int] = None,
             seed: Union[int, str, bytes, bytearray, None] = bytes(0),
             bits: Union[Sequence[int], str, bytes, bytearray, None] = None,
-            function: Optional[Callable[[bytes], bytes]] = None
+            function:
+                Union[
+                    Callable[[bytes], bytes],
+                    Callable[[bytes], bytearray],
+                    Callable[[bytes], bitlist],
+                    None
+                ] = None
         ):
         self.length = length
         self.limit = limit
@@ -128,8 +134,8 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
             self.limit = len(self.bits) # Only enough data for target bits.
         else:
             raise ValueError(
-                'target bits must be of type int, str of hexdigits, bytes, ' +
-                'bytearray, or list of integers in the interval [0, 1]'
+                'target bits must be a sequence of integers (each either 0 or 1)' +
+                'or of type int, str (of hexdigits), bytes, or bytearray'
             )
 
         self.function = function
@@ -140,8 +146,9 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
         """
         if isinstance(bs, (bytes, bytearray)):
             bs = bitlist(bs)
+
         if not isinstance(bs, bitlist):
-            raise ValueError('test output must be a bytes-like object or bitlist')
+            raise TypeError('test output must be a bytes-like object or bitlist')
 
         # Reset the bit counter if the output is too short.
         self.bit_ = self.bit_ if self.bit_ < len(bs) else 0
@@ -153,15 +160,30 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
         ) -> Union[
             Iterable[int],
             Iterable[bool],
-            Iterable[Tuple[bytearray, Callable]],
-            Iterable[bytearray]
+            Iterable[Tuple[bytes, Callable[[bitlist], bool]]],
+            Iterable[bytes]
         ]:
         """
         Return a generator that yields values based on the parameters
-        supplied at this object's instantiation.
+        supplied at this object's instantiation. If the supplied arguments
+        contain no specification and no function, an iterable of infinitely
+        many pseudorandom test inputs is returned (where each input has
+        ``length`` bytes).
+
+        >>> from itertools import islice
+        >>> [bs.hex() for bs in islice(fountains(length=3), 0, 3)]
+        ['e3b0c4', 'ce1bc4', '2ed5b5']
+
+        If an integer value is provided for the ``limit`` argument, then
+        exactly that many test inputs are returned.
 
         >>> [bs.hex() for bs in fountains(length=3, limit=4)]
         ['e3b0c4', 'ce1bc4', '2ed5b5', '781f5a']
+
+        If a function is supplied but no specification is provided, an iterable
+        of individual bit values is returned. This output can act as a
+        specification (*e.g.*, in a subsequent invocation).
+
         >>> fun = lambda bs: hashlib.md5(bs).digest()
         >>> list(fountains(
         ...     length=2,
@@ -169,6 +191,19 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
         ...     function=fun
         ... ))
         [0, 0, 1, 1]
+
+        In the example below, the specification generated above is supplied.
+        In this case, an iterable of boolean values is returned. Each boolean
+        value represents whether the function satisfies the corresponding entry
+        in the specification.
+
+        >>> list(fountains(
+        ...     length=2,
+        ...     limit=4,
+        ...     bits=[0, 0, 1, 1],
+        ...     function=fun
+        ... ))
+        [True, True, True, True]
         >>> list(fountains(
         ...     length=2,
         ...     limit=4,
@@ -176,11 +211,31 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
         ...     function=fun
         ... ))
         [True, True, True, False]
+
+        If no function is supplied but a specification is supplied, then an
+        iterable of tuples is returned. Each tuple consists of a test input
+        and a predicate that can be applied to the output of a function
+        (represented as a :obj:`~bitlist.bitlist.bitlist` object).
+
         >>> bcs = list(fountains(
         ...     length=2,
         ...     limit=4,
         ...     bits=[0, 0, 1, 1]
         ... ))
+
+        For a given index ``i`` of the output ``bcs``, suppose that the entry
+        is the tuple ``(bs, check)``. Normally, the function being tested would
+        be applied to the input ``bs`` to obtain an output. When the predicate
+        ``check`` is applied to this output, it determines whether that output
+        satisfies the entry at index ``i`` within the specification (*i.e.*,
+        ``[0, 0, 1, 1]`` in this example).
+
+        The example below utilizes the above output ``bcs`` to test the
+        function ``fun``. Note that in the below example, the output of ``fun``
+        is converted in the below into a :obj:`~bitlist.bitlist.bitlist` object
+        (because ``fun`` returns an output of type :obj:`bytes` but each
+        predicate expects a :obj:`~bitlist.bitlist.bitlist` object).
+
         >>> [check(bitlist(fun(bs))) for (bs, check) in bcs]
         [True, True, True, True]
         """
@@ -194,27 +249,30 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
             if self.function is not None and self.bits is None:
                 # Return the output bits of the function on the
                 # generated test inputs, one at a time.
-                yield self._bit(self.function(bs[:self.length]))
+                yield self._bit(self.function(bytes(bs[:self.length])))
+
             elif self.function is not None and self.bits is not None:
                 # Return whether the function has the correct bit
                 # in its output for this generated input.
                 yield \
                     self.bits[self.count] == \
-                        self._bit(self.function(bs[:self.length]))
+                        self._bit(self.function(bytes(bs[:self.length])))
+
             elif self.function is None and self.bits is not None:
                 # If a target bit sequence has been supplied
                 # but no function has been supplied, return a
                 # function that checks an output for that bit.
                 yield (
-                    bs[:self.length],
+                    bytes(bs[:self.length]),
                     eval( # pylint: disable=eval-used
                         'lambda bs: bs[' + str(self.bit_) + '] == ' + \
                         str(self.bits[self.count])
                     )
                 )
+
             else:
                 # Return the generated test input.
-                yield bs[:self.length]
+                yield bytes(bs[:self.length])
 
             self.count += 1
             self.bit_ += 1
