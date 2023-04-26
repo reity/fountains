@@ -41,7 +41,7 @@ Examples
 ^^^^^^^^
 
 .. |fountains| replace:: ``fountains``
-.. _fountains: https://fountains.readthedocs.io/en/2.0.0/_source/fountains.html#fountains.fountains.fountains
+.. _fountains: https://fountains.readthedocs.io/en/2.1.0/_source/fountains.html#fountains.fountains.fountains
 
 An object of the |fountains|_ class can be used to generate pseudorandom binary test data::
 
@@ -54,9 +54,9 @@ Supplying a function as a parameter to a |fountains|_ object makes it possible t
     >>> bits = list(fountains(3, 8, function=add))
     >>> bits
     [0, 0, 1, 1, 1, 0, 1, 0]
-    
+
 When converted to a hexadecimal string, this specification encodes partial information about four distinct input-output test cases in every character::
-    
+
     >>> from bitlist import bitlist
     >>> bitlist(bits).hex()
     '3a' # Partial outputs from eight distinct tests.
@@ -99,7 +99,7 @@ Alternatively, all unit tests are included in the module itself and can be execu
 
     python src/fountains/fountains.py -v
 
-Style conventions are enforced using `Pylint <https://pylint.pycqa.org>`__::
+Style conventions are enforced using `Pylint <https://pylint.readthedocs.io>`__::
 
     python -m pip install .[lint]
     python -m pylint src/fountains

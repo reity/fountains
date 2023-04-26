@@ -1,6 +1,6 @@
 [project]
 name = "fountains"
-version = "2.0.0"
+version = "2.1.0"
 description = """\
     Python library for generating and concisely specifying \
     reproducible pseudorandom binary data for unit testing.\
