@@ -1,2 +1,2 @@
-"""Gives users direct access to the class."""
+"""Allow users to access the class directly."""
 from fountains.fountains import fountains
