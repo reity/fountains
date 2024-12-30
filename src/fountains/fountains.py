@@ -91,7 +91,7 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
     >>> len(list(islice(fountains(32), 0, 5)))
     5
     """
-    def __init__(
+    def __init__( # pylint: disable=too-many-positional-arguments
             self: fountains,
             length: int = 1,
             limit: Optional[int] = None,
