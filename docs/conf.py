@@ -74,19 +74,14 @@ autodoc_default_options = {
     ])
 }
 autodoc_preserve_defaults = True
-autodoc_typehints = "description"
-autodoc_typehints_description_target = "documented"
+autodoc_typehints = 'description'
+autodoc_typehints_description_target = 'documented'
 
 # Allow references/links to definitions found in the Python documentation
 # and in the documentation for this package's dependencies.
 
 def rtd_url_for_installed_version(name):
     prefix = 'https://' + name + '.readthedocs.io/en/'
-
-    if sys.version_info.major == 3 and sys.version_info.minor == 7:
-        import pkg_resources
-        return prefix + pkg_resources.get_distribution(name).version
-
     import importlib.metadata
     return prefix + importlib.metadata.version(name)
 
@@ -105,7 +100,6 @@ html_theme = 'sphinx_rtd_theme'
 
 # Theme options for Read the Docs.
 html_theme_options = {
-    'display_version': True,
     'collapse_navigation': True,
     'navigation_depth': 1,
     'titles_only': True
