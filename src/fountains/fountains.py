@@ -164,11 +164,14 @@ class fountains: # pylint: disable=too-many-arguments,too-few-public-methods
             Iterable[bytes]
         ]:
         """
-        Return a generator that yields values based on the parameters
-        supplied at this object's instantiation. If the supplied arguments
-        contain no specification and no function, an iterable of infinitely
-        many pseudorandom test inputs is returned (where each input has
-        ``length`` bytes).
+        Yield values based on the parameters supplied when this object was
+        instantiated.
+
+        :returns: Iterable of values based on the configuration of this instance.
+
+        If the arguments supplied at instantiation contain no specification and
+        no function, an iterable of infinitely many pseudorandom test inputs is
+        returned (where each test input has ``length`` bytes).
 
         >>> from itertools import islice
         >>> [bs.hex() for bs in islice(fountains(length=3), 0, 3)]
