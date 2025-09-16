@@ -34,7 +34,7 @@ This library is available as a `package on PyPI <https://pypi.org/project/founta
 
     python -m pip install fountains
 
-The library can be imported in the usual ways:
+The library can be imported in the usual manner:
 
 .. code-block:: python
 
