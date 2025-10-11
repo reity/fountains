@@ -45,7 +45,7 @@ Examples
 ^^^^^^^^
 
 .. |fountains| replace:: ``fountains``
-.. _fountains: https://fountains.readthedocs.io/en/3.0.0/_source/fountains.html#fountains.fountains.fountains
+.. _fountains: https://fountains.readthedocs.io/en/3.0.1/_source/fountains.html#fountains.fountains.fountains
 
 An object of the |fountains|_ class can be used to generate pseudorandom binary test data:
 
